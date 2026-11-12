@@ -1,0 +1,24 @@
+flowchart LR
+    subgraph Browser["Navigateur"]
+        React["React / Vite<br/>(:5173)<br/>Client public OAuth2 + PKCE"]
+    end
+
+    subgraph KC["Keycloak (:8080)<br/>Authorization Server / OpenID Provider"]
+        Realm["Realm enset-realm"]
+        Roles["Rôles : USER, ADMIN"]
+        Users["Utilisateurs : alice, bob"]
+    end
+
+    subgraph SB["Spring Boot (:8081)<br/>Resource Server"]
+        Sec["Spring Security<br/>validation JWT + autorisations"]
+        Ctrl["DemandeController<br/>API REST"]
+        Mem["Demandes en mémoire"]
+    end
+
+    React -->|"1. redirection login (OIDC)"| KC
+    KC -->|"2. code d'autorisation"| React
+    React -->|"3. échange code + PKCE"| KC
+    KC -->|"4. Access Token (JWT)"| React
+    React -->|"5. Authorization: Bearer JWT"| Sec
+    Sec --> Ctrl
+    Ctrl --> Mem

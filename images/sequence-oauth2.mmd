@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    participant U as Utilisateur
+    participant R as React (Client public)
+    participant K as Keycloak
+    participant S as Spring Boot
+
+    U->>R: ouvre http://localhost:5173
+    R->>K: keycloak.init()<br/>redirection vers /auth (PKCE S256)
+    K->>U: page de connexion
+    U->>K: identifiants (alice / bob)
+    K-->>R: code d'autorisation
+    R->>K: POST /token (code + code_verifier)
+    K-->>R: access_token + id_token + refresh_token
+    R->>S: GET /api/demandes<br/>Authorization: Bearer access_token
+    S->>S: vérifie signature / iss / exp (JWKS)
+    S-->>R: 200 OK (demandes JSON)
+    R-->>U: affiche les demandes

@@ -1,0 +1,37 @@
+classDiagram
+    class MoussApplication {
+        +main(String[] args) void
+    }
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity http) SecurityFilterChain
+        +jwtConverter() JwtAuthenticationConverter
+        +corsConfigurationSource() CorsConfigurationSource
+    }
+    class DemandeController {
+        -AtomicLong sequence
+        -List~Demande~ demandes
+        +publicApi() Map
+        +mesDemandes(Jwt jwt) List~Demande~
+        +creer(Jwt jwt, NouvelleDemande n) Demande
+        +toutesLesDemandes() List~Demande~
+        +changerStatut(Long id, StatutDemande s) Demande
+        +profil(Jwt jwt) Map
+    }
+    class Demande {
+        +Long id
+        +String owner
+        +String objet
+        +String statut
+    }
+    class NouvelleDemande {
+        +String objet
+    }
+    class StatutDemande {
+        +String statut
+    }
+
+    MoussApplication --> SecurityConfig : configure
+    SecurityConfig ..> DemandeController : sécurise
+    DemandeController --> Demande : produit
+    DemandeController --> NouvelleDemande : reçoit
+    DemandeController --> StatutDemande : reçoit
